@@ -15,13 +15,19 @@ import {
 // layout
 import AuthPage from "./layouts/AuthPage.tsx";
 
+// components
+import Header from "./components/header/Header.tsx";
+
 function App(): ReactElement {
   return (
     <Router>
-      <Routes>
-        <Route path={"/"} element={<Navigate to={"/auth"} />} />
-        <Route path={"/auth"} element={<AuthPage />} />
-      </Routes>
+      <Header />
+      <main>
+        <Routes>
+          <Route path={"/"} element={<Navigate to={"/auth"} />} />
+          <Route path={"/auth"} element={<AuthPage />} />
+        </Routes>
+      </main>
     </Router>
   );
 }

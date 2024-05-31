@@ -1,0 +1,80 @@
+@use "../../utils/styles/variables" as vars;
+
+header {
+  @media (min-width: vars.$tabletteBreakpoint) {
+    padding: 0 2em 0 2em;
+  }
+  padding: 1em 0 1em 0;
+  background: #fffff4;
+  box-shadow:
+    rgba(60, 64, 67, 0.3) 0 1px 2px 0,
+    rgba(60, 64, 67, 0.15) 0 1px 3px 1px;
+  border-radius: 0 0 8px 8px;
+}
+
+header nav {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+header nav figure {
+  @media (min-width: vars.$tabletteBreakpoint) {
+    width: 110px;
+  }
+  width: 85px;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.titleWrapper {
+  @media (min-width: vars.$tabletteBreakpoint) {
+    flex-flow: row;
+  }
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex-flow: column;
+  text-decoration: unset;
+}
+
+header h1 {
+  color: vars.$fontColorPrimary;
+}
+
+.leftSide,
+.rightSide {
+  @media (min-width: vars.$tabletteBreakpoint) {
+    width: 50%;
+  }
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+}
+
+.leftSide {
+  width: 100%;
+}
+
+.rightSide {
+  justify-content: space-between;
+}
+
+.rightSide a {
+  text-decoration: none;
+  color: vars.$fontColorPrimary;
+
+  &:hover {
+    color: vars.$colorPrimary;
+    text-decoration: vars.$colorPrimary underline;
+  }
+}
+
+.activeLink {
+  text-decoration: underline;
+}
