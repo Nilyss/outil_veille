@@ -1,6 +1,9 @@
 // style
 import "./authForm.scss";
 
+// icons
+import { LiaEyeSlash, LiaEyeSolid } from "react-icons/lia";
+
 // types
 import { ReactElement, ChangeEvent } from "react";
 
@@ -19,6 +22,9 @@ export default function AuthForm(): ReactElement {
   const [password, setPassword] = useState<string>("");
   const [passwordConfirmation, setPasswordConfirmation] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
+  const [rememberMe, setRememberMe] = useState<boolean>(false);
 
   const handleChangeForm = () => {
     setIsSignUpForm(!isSignUpForm);
@@ -41,6 +47,36 @@ export default function AuthForm(): ReactElement {
     <section id={"authForm"}>
       <form>
         <h2>{authFormTitle}</h2>
+        {isSignUpForm && (
+          <>
+            <div
+              className={`inputWrapper ${lastName.length > 0 ? "hasContent" : ""}`}
+            >
+              <input
+                type={"text"}
+                name={"lastName"}
+                value={lastName}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setLastName(e.target.value)
+                }
+              />
+              <label htmlFor={"lastName"}>Nom : </label>
+            </div>
+            <div
+              className={`inputWrapper ${firstName.length > 0 ? "hasContent" : ""}`}
+            >
+              <input
+                type={"text"}
+                name={"firstName"}
+                value={firstName}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setFirstName(e.target.value)
+                }
+              />
+              <label htmlFor={"firstName"}>Prénom : </label>
+            </div>
+          </>
+        )}
         <div
           className={`inputWrapper userNameWrapper ${userName.length > 0 ? "hasContent" : ""}`}
         >
@@ -68,8 +104,12 @@ export default function AuthForm(): ReactElement {
             }
           />
           <label htmlFor={"password"}>Mot de passe : </label>
-          <span className="togglePassword" onClick={toggleShowPassword}>
-            {showPassword ? "🙈" : "👁️"}
+          <span
+            className="togglePassword"
+            onClick={toggleShowPassword}
+            title={"Afficher / masquer le mot de passe"}
+          >
+            {showPassword ? <LiaEyeSlash /> : <LiaEyeSolid />}
           </span>
         </div>
         {isSignUpForm && (
@@ -85,9 +125,23 @@ export default function AuthForm(): ReactElement {
               }
             />
             <label htmlFor={"password"}>Confirmer le mot de passe : </label>
-            <span className="togglePassword" onClick={toggleShowPassword}>
-              {showPassword ? "🙈" : "👁️"}
+            <span
+              className="togglePassword"
+              onClick={toggleShowPassword}
+              title={"Afficher / masquer le mot de passe"}
+            >
+              {showPassword ? <LiaEyeSlash /> : <LiaEyeSolid />}
             </span>
+          </div>
+        )}
+        {!isSignUpForm && (
+          <div className={`inputWrapper rememberMeWrapper`}>
+            <label htmlFor={"rememberMe"}>Se souvenir de moi ?</label>
+            <input
+              type={"checkbox"}
+              name={"rememberMe"}
+              onChange={() => setRememberMe(!rememberMe)}
+            />
           </div>
         )}
         <div>
@@ -100,7 +154,9 @@ export default function AuthForm(): ReactElement {
           </p>
         </div>
         <div className={"buttonWrapper formButtonWrapper"}>
-          <button className={"button"}>Se connecter</button>
+          <button className={"button"}>
+            {isSignUpForm ? "S'inscrire" : "Se connecter"}
+          </button>
         </div>
       </form>
     </section>

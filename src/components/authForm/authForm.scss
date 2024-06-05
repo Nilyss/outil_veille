@@ -6,7 +6,7 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 75dvh;
+  min-height: 75dvh;
   margin: auto;
 }
 
@@ -22,7 +22,7 @@
 #authForm h2 {
   padding-left: 10%;
   align-self: flex-start;
-  margin-bottom: 1em;
+  margin-bottom: .5em;
 }
 
 #authForm .inputWrapper {
@@ -66,6 +66,27 @@
   transform: translateY(0);
 }
 
+#authForm .rememberMeWrapper {
+  margin-top: 0.3em;
+  margin-bottom: 1em;
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5em;
+
+  & label {
+    font-size: 0.8em;
+    position: unset;
+    transform: none;
+  }
+
+  & input {
+    transform: scale(0.8);
+    cursor: pointer;
+  }
+}
+
 #authForm .goToSignUp {
   font-size: 0.8em;
 }
@@ -80,7 +101,7 @@
 }
 
 #authForm .formButtonWrapper {
-  margin-top: 5em;
+  margin-top: 1em;
 }
 
 #authForm .togglePassword {
@@ -91,4 +112,6 @@
   cursor: pointer;
   user-select: none;
   font-size: 1.2em;
+  display: flex;
+  align-items: center;
 }
