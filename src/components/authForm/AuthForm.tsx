@@ -16,12 +16,6 @@ import { useState, useContext } from "react";
 
 export default function AuthForm(): ReactElement {
   const [isSignUpForm, setIsSignUpForm] = useState<boolean>(false);
-  const [authFormTitle, setAuthFormTitle] = useState<string>("Connexion");
-  const [toggleFormMessage, setToggleFormMessage] = useState<string>(
-    "Pas encore de compte ?",
-  );
-  const [toggleFormMessageSpan, setToggleFormMessageSpan] =
-    useState<string>("Crée en un vite");
   const [userName, setUserName] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [passwordConfirmation, setPasswordConfirmation] = useState<string>("");
@@ -33,19 +27,6 @@ export default function AuthForm(): ReactElement {
   // context functions
   const { getUser, createUser }: IUserContext = useContext(UserContext);
 
-  const handleChangeForm = () => {
-    setIsSignUpForm(!isSignUpForm);
-    if (isSignUpForm) {
-      setAuthFormTitle("Connexion");
-      setToggleFormMessage("Pas encore de compte ?");
-      setToggleFormMessageSpan("Crée en un vite");
-    } else {
-      setAuthFormTitle("Crée un compte");
-      setToggleFormMessage("Déjà un compte ?");
-      setToggleFormMessageSpan("Connecte-toi ici");
-    }
-  };
-
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -53,7 +34,7 @@ export default function AuthForm(): ReactElement {
   return (
     <section id={"authForm"}>
       <form>
-        <h2>{authFormTitle}</h2>
+        <h2>{isSignUpForm ? "Crée un compte" : "Connexion"}</h2>
         {isSignUpForm && (
           <>
             <div
@@ -153,9 +134,9 @@ export default function AuthForm(): ReactElement {
         )}
         <div>
           <p className={"goToSignUp"}>
-            {toggleFormMessage}{" "}
-            <span onClick={() => handleChangeForm()}>
-              {toggleFormMessageSpan}
+            {isSignUpForm ? "Deja un compte ?" : "Pas encore de compte ?"}{" "}
+            <span onClick={() => setIsSignUpForm(!isSignUpForm)}>
+              {isSignUpForm ? "Connecte-toi ici" : "Crée en un vite"}
             </span>{" "}
             !
           </p>
