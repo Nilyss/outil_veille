@@ -5,17 +5,21 @@ const apiCalls: APICalls = new APICalls();
 
 interface IUserService {
   userEndpoint: string;
-  getUser(id: string): Promise<User>;
+  connectUser(credentials: { email: string; password: string }): Promise<User>;
   createUser(user: UserCreationRequest): Promise<User>;
 }
 
 export default class UserService implements IUserService {
   userEndpoint: string = "/users";
 
-  async getUser(id: string): Promise<User> {
+  async connectUser(credentials: {
+    email: string;
+    password: string;
+  }): Promise<User> {
+    console.log("credentials —>", credentials);
     try {
       return <User>(
-        await apiCalls.getRequest<User>(`${this.userEndpoint}/${id}`)
+        await apiCalls.postRequest<User>(this.userEndpoint, credentials)
       );
     } catch (err) {
       console.error(err);
@@ -25,6 +29,7 @@ export default class UserService implements IUserService {
 
   async createUser(user: UserCreationRequest): Promise<User> {
     try {
+      console.log("user req.body —>", user);
       return <User>await apiCalls.postRequest<User>(this.userEndpoint, user);
     } catch (err) {
       console.error(err);

@@ -7,7 +7,10 @@ import { Context, createContext, useState } from "react";
 export interface IUserContext {
   user: User | null;
   setUser: Dispatch<SetStateAction<User | null>>;
-  getUser: (id: string) => Promise<User>;
+  connectUser: (credentials: {
+    email: string;
+    password: string;
+  }) => Promise<User>;
   createUser: (user: UserCreationRequest) => Promise<User>;
 }
 
@@ -19,7 +22,7 @@ const userService = new UserService();
 export const UserContext: Context<IUserContext> = createContext<IUserContext>({
   user: null,
   setUser: () => {},
-  getUser: async (): Promise<User> => {
+  connectUser: async (): Promise<User> => {
     return {} as User;
   },
   createUser: async (): Promise<User> => {
@@ -31,8 +34,11 @@ export const UserContext: Context<IUserContext> = createContext<IUserContext>({
 export const UserProvider = ({ children }: { children: ReactElement }) => {
   const [user, setUser] = useState<User | null>(null);
 
-  const getUser = async (id: string): Promise<User> => {
-    const user: User = await userService.getUser(id);
+  const connectUser = async (credentials: {
+    email: string;
+    password: string;
+  }): Promise<User> => {
+    const user: User = await userService.connectUser(credentials);
     setUser(user);
     return user;
   };
@@ -44,7 +50,7 @@ export const UserProvider = ({ children }: { children: ReactElement }) => {
   };
 
   return (
-    <UserContext.Provider value={{ getUser, user, setUser, createUser }}>
+    <UserContext.Provider value={{ connectUser, user, setUser, createUser }}>
       {children}
     </UserContext.Provider>
   );

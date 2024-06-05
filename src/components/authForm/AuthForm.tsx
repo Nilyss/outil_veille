@@ -5,7 +5,7 @@ import "./authForm.scss";
 import { LiaEyeSlash, LiaEyeSolid } from "react-icons/lia";
 
 // types
-import { ReactElement, ChangeEvent } from "react";
+import { ReactElement, ChangeEvent, MouseEvent } from "react";
 import { IUserContext } from "../../context/UserContext";
 
 // context
@@ -16,7 +16,7 @@ import { useState, useContext } from "react";
 
 export default function AuthForm(): ReactElement {
   const [isSignUpForm, setIsSignUpForm] = useState<boolean>(false);
-  const [userName, setUserName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [passwordConfirmation, setPasswordConfirmation] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -25,10 +25,26 @@ export default function AuthForm(): ReactElement {
   const [rememberMe, setRememberMe] = useState<boolean>(false);
 
   // context functions
-  const { getUser, createUser }: IUserContext = useContext(UserContext);
+  const { connectUser, createUser }: IUserContext = useContext(UserContext);
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handleSubmit = async (
+    e: MouseEvent<HTMLButtonElement>,
+  ): Promise<void> => {
+    e.preventDefault();
+    if (!isSignUpForm) {
+      await connectUser({ email, password });
+    } else {
+      await createUser({
+        firstName,
+        lastName,
+        email,
+        password,
+      });
+    }
   };
 
   return (
@@ -66,17 +82,17 @@ export default function AuthForm(): ReactElement {
           </>
         )}
         <div
-          className={`inputWrapper userNameWrapper ${userName.length > 0 ? "hasContent" : ""}`}
+          className={`inputWrapper userNameWrapper ${email.length > 0 ? "hasContent" : ""}`}
         >
           <input
             type={"email"}
-            name={"userName"}
-            value={userName}
+            name={"email"}
+            value={email}
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              setUserName(e.target.value)
+              setEmail(e.target.value)
             }
           />
-          <label htmlFor={"userName"}>
+          <label htmlFor={"email"}>
             {isSignUpForm ? "Adresse mail" : "Identifiant"} :{" "}
           </label>
         </div>
@@ -142,7 +158,7 @@ export default function AuthForm(): ReactElement {
           </p>
         </div>
         <div className={"buttonWrapper formButtonWrapper"}>
-          <button className={"button"}>
+          <button className={"button"} onClick={handleSubmit}>
             {isSignUpForm ? "S'inscrire" : "Se connecter"}
           </button>
         </div>
