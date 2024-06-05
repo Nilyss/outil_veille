@@ -6,9 +6,13 @@ import { LiaEyeSlash, LiaEyeSolid } from "react-icons/lia";
 
 // types
 import { ReactElement, ChangeEvent } from "react";
+import { IUserContext } from "../../context/UserContext";
+
+// context
+import { UserContext } from "../../context/UserContext";
 
 // hooks
-import { useState } from "react";
+import { useState, useContext } from "react";
 
 export default function AuthForm(): ReactElement {
   const [isSignUpForm, setIsSignUpForm] = useState<boolean>(false);
@@ -25,6 +29,9 @@ export default function AuthForm(): ReactElement {
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
   const [rememberMe, setRememberMe] = useState<boolean>(false);
+
+  // context functions
+  const { getUser, createUser }: IUserContext = useContext(UserContext);
 
   const handleChangeForm = () => {
     setIsSignUpForm(!isSignUpForm);
