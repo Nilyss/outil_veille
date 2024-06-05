@@ -16,11 +16,11 @@ export default class UserService implements IUserService {
     email: string;
     password: string;
   }): Promise<User> {
-    console.log("credentials —>", credentials);
+    console.log("credentials req.body —>", credentials);
     try {
-      return <User>(
-        await apiCalls.postRequest<User>(this.userEndpoint, credentials)
-      );
+      const res = await apiCalls.getToken(credentials);
+      console.log("getTokenResponse —>", res);
+      return res;
     } catch (err) {
       console.error(err);
       throw err;
@@ -29,7 +29,7 @@ export default class UserService implements IUserService {
 
   async createUser(user: UserCreationRequest): Promise<User> {
     try {
-      console.log("user req.body —>", user);
+      console.log("CreateUser req.body —>", user);
       return <User>await apiCalls.postRequest<User>(this.userEndpoint, user);
     } catch (err) {
       console.error(err);
