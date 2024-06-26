@@ -1,36 +1,49 @@
+import Cookies from "js-cookie";
 import { User, UserCreationRequest } from "../models/User.model";
-import { APICalls } from "../APICalls";
+import { APICalls, APIResponse } from "../APICalls";
 
 const apiCalls: APICalls = new APICalls();
 
 interface IUserService {
-  userEndpoint: string;
+  createUserEndpoint: string;
+  connectUserEndpoint: string;
   connectUser(credentials: { email: string; password: string }): Promise<User>;
-  createUser(user: UserCreationRequest): Promise<User>;
+  createUser(user: UserCreationRequest): Promise<void>;
 }
 
 export default class UserService implements IUserService {
-  userEndpoint: string = "/users";
+  connectUserEndpoint: string = "/auth/login";
+  createUserEndpoint: string = "/users/create";
 
   async connectUser(credentials: {
     email: string;
     password: string;
   }): Promise<User> {
-    console.log("credentials req.body —>", credentials);
     try {
-      const res = await apiCalls.getToken(credentials);
-      console.log("getTokenResponse —>", res);
-      return res;
+      const res: APIResponse<User> = await apiCalls.postRequest(
+        this.connectUserEndpoint,
+        credentials,
+      );
+      const cookies: string[] | null =
+        res.headers.get("set-cookie")?.split(", ") || null;
+      if (cookies) {
+        cookies.forEach((cookie: string): void => {
+          const cookieNameValue: string = cookie.split(";")[0];
+          const [cookieName, cookieValue]: string[] =
+            cookieNameValue.split("=");
+          Cookies.set(cookieName, cookieValue);
+        });
+      }
+      return res.data as User;
     } catch (err) {
       console.error(err);
       throw err;
     }
   }
 
-  async createUser(user: UserCreationRequest): Promise<User> {
+  async createUser(user: UserCreationRequest): Promise<void> {
     try {
-      console.log("CreateUser req.body —>", user);
-      return <User>await apiCalls.postRequest<User>(this.userEndpoint, user);
+      await apiCalls.postRequest(this.createUserEndpoint, user);
     } catch (err) {
       console.error(err);
       throw err;

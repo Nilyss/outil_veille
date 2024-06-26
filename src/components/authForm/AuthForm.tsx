@@ -7,6 +7,7 @@ import { LiaEyeSlash, LiaEyeSolid } from "react-icons/lia";
 // types
 import { ReactElement, ChangeEvent, MouseEvent } from "react";
 import { IUserContext } from "../../context/UserContext";
+import { UserLoginRequest } from "../../API/models/User.model";
 
 // context
 import { UserContext } from "../../context/UserContext";
@@ -20,12 +21,11 @@ export default function AuthForm(): ReactElement {
   const [password, setPassword] = useState<string>("");
   const [passwordConfirmation, setPasswordConfirmation] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [firstName, setFirstName] = useState<string>("");
-  const [lastName, setLastName] = useState<string>("");
   const [rememberMe, setRememberMe] = useState<boolean>(false);
 
   // context functions
-  const { connectUser, createUser }: IUserContext = useContext(UserContext);
+  const { connectUser, createUser, user }: IUserContext =
+    useContext(UserContext);
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
@@ -36,11 +36,10 @@ export default function AuthForm(): ReactElement {
   ): Promise<void> => {
     e.preventDefault();
     if (!isSignUpForm) {
-      await connectUser({ email, password });
+      const credentials: UserLoginRequest = { email, password };
+      await connectUser(credentials);
     } else {
       await createUser({
-        firstName,
-        lastName,
         email,
         password,
       });
@@ -51,36 +50,6 @@ export default function AuthForm(): ReactElement {
     <section id={"authForm"}>
       <form>
         <h2>{isSignUpForm ? "Crée un compte" : "Connexion"}</h2>
-        {isSignUpForm && (
-          <>
-            <div
-              className={`inputWrapper ${lastName.length > 0 ? "hasContent" : ""}`}
-            >
-              <input
-                type={"text"}
-                name={"lastName"}
-                value={lastName}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  setLastName(e.target.value)
-                }
-              />
-              <label htmlFor={"lastName"}>Nom : </label>
-            </div>
-            <div
-              className={`inputWrapper ${firstName.length > 0 ? "hasContent" : ""}`}
-            >
-              <input
-                type={"text"}
-                name={"firstName"}
-                value={firstName}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  setFirstName(e.target.value)
-                }
-              />
-              <label htmlFor={"firstName"}>Prénom : </label>
-            </div>
-          </>
-        )}
         <div
           className={`inputWrapper userNameWrapper ${email.length > 0 ? "hasContent" : ""}`}
         >

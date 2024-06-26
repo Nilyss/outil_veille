@@ -10,24 +10,22 @@ export interface IUserContext {
   connectUser: (credentials: {
     email: string;
     password: string;
-  }) => Promise<User>;
-  createUser: (user: UserCreationRequest) => Promise<User>;
+  }) => Promise<User | null>;
+  createUser: (user: UserCreationRequest) => Promise<void>;
 }
 
 // services
 import UserService from "../API/services/User.service";
-const userService = new UserService();
+const userService: UserService = new UserService();
 
 // init Context
 export const UserContext: Context<IUserContext> = createContext<IUserContext>({
   user: null,
-  setUser: () => {},
+  setUser: (): void => {},
   connectUser: async (): Promise<User> => {
     return {} as User;
   },
-  createUser: async (): Promise<User> => {
-    return {} as User;
-  },
+  createUser: async (): Promise<void> => {},
 });
 
 // Provider
@@ -37,16 +35,15 @@ export const UserProvider = ({ children }: { children: ReactElement }) => {
   const connectUser = async (credentials: {
     email: string;
     password: string;
-  }): Promise<User> => {
-    const user: User = await userService.connectUser(credentials);
-    setUser(user);
+  }): Promise<User | null> => {
+    const res: User = await userService.connectUser(credentials);
+    setUser(res);
+    //todo: states don't look good, sims to be not saved
     return user;
   };
 
-  const createUser = async (user: UserCreationRequest): Promise<User> => {
-    const newUser: User = await userService.createUser(user);
-    setUser(newUser);
-    return newUser;
+  const createUser = async (user: UserCreationRequest): Promise<void> => {
+    return await userService.createUser(user);
   };
 
   return (
