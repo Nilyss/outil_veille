@@ -6,14 +6,19 @@ import { LiaEyeSlash, LiaEyeSolid } from "react-icons/lia";
 
 // types
 import { ReactElement, ChangeEvent, MouseEvent } from "react";
+import { NavigateFunction } from "react-router-dom";
 import { IUserContext } from "../../context/UserContext";
-import { UserLoginRequest } from "../../API/models/User.model";
+import { User, UserLoginRequest } from "../../API/models/User.model";
 
 // context
 import { UserContext } from "../../context/UserContext";
 
+// libraries
+import Cookies from "js-cookie";
+
 // hooks
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function AuthForm(): ReactElement {
   const [isSignUpForm, setIsSignUpForm] = useState<boolean>(false);
@@ -22,9 +27,10 @@ export default function AuthForm(): ReactElement {
   const [passwordConfirmation, setPasswordConfirmation] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [rememberMe, setRememberMe] = useState<boolean>(false);
+  const navigate: NavigateFunction = useNavigate();
 
   // context functions
-  const { connectUser, createUser, user }: IUserContext =
+  const { connectUser, createUser, user, setUser }: IUserContext =
     useContext(UserContext);
 
   const toggleShowPassword = () => {
@@ -45,6 +51,21 @@ export default function AuthForm(): ReactElement {
       });
     }
   };
+
+  useEffect(() => {
+    Cookies.remove("access_token");
+    const rememberedUser: string | null = localStorage.getItem("user");
+    if (rememberedUser) {
+      const parsedUser: User = JSON.parse(rememberedUser);
+      setUser(parsedUser);
+    }
+    if (user) {
+      if (rememberMe) {
+        localStorage.setItem("user", JSON.stringify(user));
+      }
+      navigate("/home", { replace: true });
+    }
+  }, [navigate, rememberMe, setUser, user]);
 
   return (
     <section id={"authForm"}>

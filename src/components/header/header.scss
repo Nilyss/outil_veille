@@ -12,14 +12,7 @@ header {
   border-radius: 0 0 8px 8px;
 }
 
-header nav {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-header nav figure {
+header figure {
   @media (min-width: vars.$tabletteBreakpoint) {
     width: 110px;
   }
@@ -45,36 +38,4 @@ header nav figure {
 
 header h1 {
   color: vars.$fontColorPrimary;
-}
-
-.leftSide,
-.rightSide {
-  @media (min-width: vars.$tabletteBreakpoint) {
-    width: 50%;
-  }
-  display: flex;
-  flex-flow: row;
-  align-items: center;
-}
-
-.leftSide {
-  width: 100%;
-}
-
-.rightSide {
-  justify-content: space-between;
-}
-
-.rightSide a {
-  text-decoration: none;
-  color: vars.$fontColorPrimary;
-
-  &:hover {
-    color: vars.$colorPrimary;
-    text-decoration: vars.$colorPrimary underline;
-  }
-}
-
-.activeLink {
-  text-decoration: underline;
 }

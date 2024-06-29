@@ -1,0 +1,24 @@
+@use "../../utils/styles/variables" as vars;
+
+#navBar {
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  justify-content: space-around;
+  padding: 1em;
+}
+
+#navBar a {
+  font-size: 1.7em;
+  text-decoration: none;
+  color: vars.$colorPrimary;
+
+  &:hover {
+    color: vars.$colorPrimary;
+    text-decoration: vars.$colorPrimary underline;
+  }
+}
+
+.activeLink {
+  text-decoration: underline;
+}

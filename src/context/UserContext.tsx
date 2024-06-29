@@ -36,14 +36,22 @@ export const UserProvider = ({ children }: { children: ReactElement }) => {
     email: string;
     password: string;
   }): Promise<User | null> => {
-    const res: User = await userService.connectUser(credentials);
-    setUser(res);
-    //todo: states don't look good, sims to be not saved
-    return user;
+    try {
+      const res: User = await userService.connectUser(credentials);
+      setUser(res);
+      return res;
+    } catch (error) {
+      console.error("Failed to connect user", error);
+      return null;
+    }
   };
 
   const createUser = async (user: UserCreationRequest): Promise<void> => {
-    return await userService.createUser(user);
+    try {
+      await userService.createUser(user);
+    } catch (error) {
+      console.error("Failed to create user", error);
+    }
   };
 
   return (
