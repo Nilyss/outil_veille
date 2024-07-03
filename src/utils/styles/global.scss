@@ -58,7 +58,7 @@ img {
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
-  
+
   &:hover {
     cursor: pointer;
   }
@@ -148,4 +148,8 @@ img {
 
     outline: 0;
   }
+}
+
+.error {
+  color: #f44336;
 }

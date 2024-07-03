@@ -1,22 +1,12 @@
-// style
+// imports
 import "./authForm.scss";
-
-// icons
 import { LiaEyeSlash, LiaEyeSolid } from "react-icons/lia";
-
-// types
 import { ReactElement, ChangeEvent, MouseEvent } from "react";
 import { NavigateFunction } from "react-router-dom";
 import { IUserContext } from "../../context/UserContext";
 import { User, UserLoginRequest } from "../../API/models/User.model";
-
-// context
 import { UserContext } from "../../context/UserContext";
-
-// libraries
 import Cookies from "js-cookie";
-
-// hooks
 import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -27,6 +17,10 @@ export default function AuthForm(): ReactElement {
   const [passwordConfirmation, setPasswordConfirmation] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [rememberMe, setRememberMe] = useState<boolean>(false);
+  const [errorMessages, setErrorMessages] = useState<{ [key: string]: string }>(
+    {},
+  );
+
   const navigate: NavigateFunction = useNavigate();
 
   // context functions
@@ -37,18 +31,87 @@ export default function AuthForm(): ReactElement {
     setShowPassword(!showPassword);
   };
 
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email) ? "" : "L'adresse mail n'est pas valide.";
+  };
+
+  const validatePassword = (password: string) => {
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    return passwordRegex.test(password)
+      ? ""
+      : "Le mot de passe doit contenir au moins 8 caractères, dont une lettre et un chiffre.";
+  };
+
+  const validatePasswordConfirmation = (
+    password: string,
+    confirmation: string,
+  ) => {
+    return password === confirmation
+      ? ""
+      : "Les mots de passe ne correspondent pas.";
+  };
+
+  const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+    isSignUpForm &&
+      setErrorMessages((prev) => ({
+        ...prev,
+        email: validateEmail(e.target.value),
+      }));
+  };
+
+  const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+    isSignUpForm &&
+      setErrorMessages((prev) => ({
+        ...prev,
+        password: validatePassword(e.target.value),
+      }));
+  };
+
+  const handlePasswordConfirmationChange = (
+    e: ChangeEvent<HTMLInputElement>,
+  ) => {
+    setPasswordConfirmation(e.target.value);
+    setErrorMessages((prev) => ({
+      ...prev,
+      passwordConfirmation: validatePasswordConfirmation(
+        password,
+        e.target.value,
+      ),
+    }));
+  };
+
   const handleSubmit = async (
     e: MouseEvent<HTMLButtonElement>,
   ): Promise<void> => {
     e.preventDefault();
     if (!isSignUpForm) {
       const credentials: UserLoginRequest = { email, password };
-      await connectUser(credentials);
+      try {
+        const user: User | null = await connectUser(credentials);
+        if (!user) {
+          setErrorMessages({
+            general:
+              "La connexion a échoué. Veuillez vérifier vos identifiants.",
+          });
+        }
+      } catch (error) {
+        console.log(error);
+        setErrorMessages({
+          general: "La connexion a échoué. Veuillez réessayer plus tard.",
+        });
+      }
     } else {
-      await createUser({
-        email,
-        password,
-      });
+      try {
+        await createUser({ email, password });
+      } catch (error) {
+        setErrorMessages({
+          general:
+            "La création du compte a échoué. Veuillez réessayer plus tard.",
+        });
+      }
     }
   };
 
@@ -67,6 +130,31 @@ export default function AuthForm(): ReactElement {
     }
   }, [navigate, rememberMe, setUser, user]);
 
+  const formValidation = (event: MouseEvent<HTMLButtonElement>) => {
+    if (isSignUpForm) {
+      const errors: { [key: string]: string } = {
+        email: validateEmail(email),
+        password: validatePassword(password),
+        passwordConfirmation: validatePasswordConfirmation(
+          password,
+          passwordConfirmation,
+        ),
+      };
+      setErrorMessages(errors);
+
+      if (!errors.email && !errors.password && !errors.passwordConfirmation) {
+        return handleSubmit(event);
+      }
+    } else {
+      if (email.length > 0 && password.length > 0) {
+        return handleSubmit(event);
+      } else {
+        setErrorMessages({ general: "Veuillez remplir tous les champs." });
+      }
+    }
+    return false;
+  };
+
   return (
     <section id={"authForm"}>
       <form>
@@ -78,13 +166,14 @@ export default function AuthForm(): ReactElement {
             type={"email"}
             name={"email"}
             value={email}
-            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              setEmail(e.target.value)
-            }
+            onChange={handleEmailChange}
           />
           <label htmlFor={"email"}>
             {isSignUpForm ? "Adresse mail" : "Identifiant"} :{" "}
           </label>
+          {errorMessages.email && (
+            <p className="error">{errorMessages.email}</p>
+          )}
         </div>
         <div
           className={`inputWrapper ${password.length > 0 ? "hasContent" : ""}`}
@@ -93,9 +182,7 @@ export default function AuthForm(): ReactElement {
             type={showPassword ? "text" : "password"}
             name={"password"}
             value={password}
-            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              setPassword(e.target.value)
-            }
+            onChange={handlePasswordChange}
           />
           <label htmlFor={"password"}>Mot de passe : </label>
           <span
@@ -105,6 +192,9 @@ export default function AuthForm(): ReactElement {
           >
             {showPassword ? <LiaEyeSlash /> : <LiaEyeSolid />}
           </span>
+          {errorMessages.password && (
+            <p className="error">{errorMessages.password}</p>
+          )}
         </div>
         {isSignUpForm && (
           <div
@@ -114,9 +204,7 @@ export default function AuthForm(): ReactElement {
               type={showPassword ? "text" : "password"}
               name={"passwordConfirmation"}
               value={passwordConfirmation}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setPasswordConfirmation(e.target.value)
-              }
+              onChange={handlePasswordConfirmationChange}
             />
             <label htmlFor={"password"}>Confirmer le mot de passe : </label>
             <span
@@ -126,6 +214,9 @@ export default function AuthForm(): ReactElement {
             >
               {showPassword ? <LiaEyeSlash /> : <LiaEyeSolid />}
             </span>
+            {errorMessages.passwordConfirmation && (
+              <p className="error">{errorMessages.passwordConfirmation}</p>
+            )}
           </div>
         )}
         {!isSignUpForm && (
@@ -148,10 +239,13 @@ export default function AuthForm(): ReactElement {
           </p>
         </div>
         <div className={"buttonWrapper formButtonWrapper"}>
-          <button className={"button"} onClick={handleSubmit}>
+          <button className={"button"} onClick={formValidation}>
             {isSignUpForm ? "S'inscrire" : "Se connecter"}
           </button>
         </div>
+        {errorMessages.general && (
+          <p className="error globalError">{errorMessages.general}</p>
+        )}
       </form>
     </section>
   );
