@@ -8,15 +8,27 @@ import logo from "../../assets/logoFirstIteration.webp";
 import { ReactElement } from "react";
 import { Link } from "react-router-dom";
 
+// hooks
+import { useContext } from "react";
+
+// context
+import { UserContext } from "../../context/UserContext";
+
+// components
+import NavBar from "../navBar/NavBar";
+
 export default function Header(): ReactElement {
+  const { user } = useContext(UserContext);
+
   return (
-    <header>
-      <Link to={"/home"} title={"home"} className={"titleWrapper"}>
-        <figure>
+    <header className={user ? "loggedHeader" : ""}>
+      <Link to={"/home"} className={"titleWrapper"}>
+        <figure className={user ? "loggedFigure" : ""}>
           <img src={logo} alt={"logo"} />
         </figure>
-        <h1>Outil de veille techno</h1>
+        {!user && <h1>Dev hive</h1>}
       </Link>
+      {user && <NavBar />}
     </header>
   );
 }

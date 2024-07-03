@@ -3,9 +3,6 @@ import { ReactElement } from "react";
 import { IUserContext } from "../context/UserContext";
 import { NavigateFunction } from "react-router-dom";
 
-// components
-import Banner from "../components/banner/Banner";
-
 // context
 import { UserContext } from "../context/UserContext";
 
@@ -24,5 +21,5 @@ export default function HomePage(): ReactElement {
     }
   });
 
-  return <Banner />;
+  return <></>;
 }
